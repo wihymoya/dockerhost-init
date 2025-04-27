@@ -31,9 +31,9 @@ cat > config <<EOF
 	Subkey-Length: 4096
 	Name-Real: wylabs-admin
 	Name-Comment: still in dev
-  Name-Email: admin@wylabs.net
-  Expire-Date: 1y
-  Passphrase: $gpg_passphrase
+	Name-Email: admin@wylabs.net
+	Expire-Date: 1y
+	Passphrase: $gpg_passphrase
 EOF
 
 # Run gpg to generate key pair using config file
