@@ -41,6 +41,7 @@ sudo sh -c "echo $gpgtty_line >> $customenv_filepath"
 name_real="wylabs-admin"
 name_comment="in dev"
 name_email="admin@wylabs.net"
+expire_date="1y"
 
 cat > config <<EOF
 	Key-Type: RSA
@@ -52,7 +53,7 @@ cat > config <<EOF
 	Name-Real: $name_real
 	Name-Comment: $name_comment
 	Name-Email: $name_email
-	Expire-Date: 1y
+	Expire-Date: $expire_date
 	Passphrase: $gpg_passphrase
 EOF
 
@@ -63,7 +64,8 @@ gpg --batch --generate-key config
 pass init "$name_real ($name_comment) <$name_email>"
 
 # Unset vars
-unset gpg_passphrase customenv_filepath gcmcredstore_line gpgtty_line name_real name_comment name_email
+unset gpg_passphrase customenv_filepath gcmcredstore_line gpgtty_line
+unset name_real name_comment name_email expire_date
 
 # Download latest GCM deb package
 wget "https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.1/gcm-linux_amd64.2.6.1.deb"
