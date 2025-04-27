@@ -22,16 +22,20 @@ gpgtty_line="export GPG_TTY=$(tty)"; $gpgtty_line
 sudo sh -c "echo $gcmcredstore_line >> $customenv_filepath"
 sudo sh -c "echo $gpgtty_line >> $customenv_filepath"
 
-# Create config file for GPG --generate-key
+# Create config file for GPG --generate-key. User the vars to update your UID
+name_real="wylabs-admin"
+name_comment="in dev"
+name_email="admin@wylabs.net"
+
 cat > config <<EOF
 	Key-Type: RSA
 	Key-Length: 4096
 	Key-Usage: encrypt
 	Subkey-Type: RSA
 	Subkey-Length: 4096
-	Name-Real: wylabs-admin
-	Name-Comment: still in dev
-	Name-Email: admin@wylabs.net
+	Name-Real: $name_real
+	Name-Comment: $name_comment
+	Name-Email: $name_email
 	Expire-Date: 1y
 	Passphrase: $gpg_passphrase
 EOF
@@ -39,11 +43,11 @@ EOF
 # Run gpg to generate key pair using config file
 gpg --batch --generate-key config
 
-# Unset $gpg_passphrase
-unset gpg_passphrase
-
 # Initialize credential store
-pass init "wylabs-admin (still in dev) <admin@wylabs.net>"
+pass init "$name_real ($name_comment) <$name_email>"
+
+# Unset vars
+unset gpg_passphrase customenv_filepath gcmcredstore_line gpgtty_line name_real name_comment name_email
 
 # Download latest GCM deb package
 wget "https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.1/gcm-linux_amd64.2.6.1.deb"
@@ -81,8 +85,8 @@ sudo chmod a+r /etc/apt/keyrings/docker.asc
 
 # Set up the stable repository
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+	$(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+	sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 # Update package lists again to include Docker's repository
 sudo apt-get update
