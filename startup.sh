@@ -17,18 +17,15 @@ sudo apt-get update
 sudo apt-get --yes install gpg pass 
 
 # Add GCM vars to environment and /etc/profile.d/custom_env.sh
-customenv_filepath = "/etc/profile.d/custom_env.sh"
-gcmcredstore_line = "export GCM_CREDENTIAL_STORE=gpg"; $gcmcredstore_line
-gpgtty_line = "export GPG_TTY=$(tty)"; $gpgtty_line
+customenv_filepath="/etc/profile.d/custom_env.sh"
+gcmcredstore_line="export GCM_CREDENTIAL_STORE=gpg"; $gcmcredstore_line
+gpgtty_line="export GPG_TTY=$(tty)"; $gpgtty_line
 
 sudo sh -c "echo $gcmcredstore_line >> $customenv_filepath"
 sudo sh -c "echo $gpgtty_line >> $customenv_filepath"
 
 # Run gpg to generate key pair and UID of 'USER_ID'. You must set $GPG_PASSPHRASE before running this script
 gpg --batch --passphrase $gpg_passphrase --quick-gen-key USER_ID default default never
-
-# Unset $gpg_passphrase as it is no longer necessary
-unset gpg_passphrase
 
 # Initialize credential store
 pass init USER_ID
