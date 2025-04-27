@@ -1,14 +1,14 @@
 #!/bash/bin
 # -----------------------------------------------------------------------------------------------------------------------------
 # REMEMBER TO DOT RUN THIS SCRIPT
-# user@host:~$ . ./gcm.sh
+# user@host:~$ source ./gcm.sh
 # -----------------------------------------------------------------------------------------------------------------------------
 
 
 # Git Credential Installer
 # -----------------------------------------------------------------------------------------------------------------------------
-# Configure $GPG_PASSPHRASE via active prompt
-export GPG_PASSPHRASE=$(read -sp 'GPG_PASSPHRASE: ' gpg_pw; echo $gpg_pw); echo ''
+# Configure $gpg_passphrase via active prompt
+gpg_passphrase=$(read -sp "GPG Passphrase: " gpg_pw; echo $gpg_pw); echo ""
 
 # Update package lists
 sudo apt-get update
@@ -16,15 +16,19 @@ sudo apt-get update
 # Install required packages
 sudo apt-get --yes install gpg pass 
 
-# Export GCM vars
-export GCM_CREDENTIAL_STORE=gpg
-export GPG_TTY=$(tty)
+# Add GCM vars to environment and /etc/profile.d/custom_env.sh
+customenv_filepath = "/etc/profile.d/custom_env.sh"
+gcmcredstore_line = "export GCM_CREDENTIAL_STORE=gpg"; $gcmcredstore_line
+gpgtty_line = "export GPG_TTY=$(tty)"; $gpgtty_line
+
+sudo sh -c "echo $gcmcredstore_line >> $customenv_filepath"
+sudo sh -c "echo $gpgtty_line >> $customenv_filepath"
 
 # Run gpg to generate key pair and UID of 'USER_ID'. You must set $GPG_PASSPHRASE before running this script
-gpg --batch --passphrase $GPG_PASSPHRASE --quick-gen-key USER_ID default default never
+gpg --batch --passphrase $gpg_passphrase --quick-gen-key USER_ID default default never
 
-# Unset $GPG_PASSPHRASE as it is no longer necessary
-unset GPG_PASSPHRASE
+# Unset $gpg_passphrase as it is no longer necessary
+unset gpg_passphrase
 
 # Initialize credential store
 pass init USER_ID
