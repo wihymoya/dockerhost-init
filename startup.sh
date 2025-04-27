@@ -1,5 +1,7 @@
 #!/bin/bash
-# REMEMBER TO DOT RUN THIS SCRIPT
+# Remember to source this script:
+# user@host:~$ . ./startup.sh
+# OR
 # user@host:~$ source ./startup.sh
 
 # --------------------------------
