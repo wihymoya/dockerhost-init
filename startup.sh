@@ -48,6 +48,7 @@ cat > config <<EOF
 	Key-Usage: encrypt
 	Subkey-Type: RSA
 	Subkey-Length: 4096
+ 	Subkey-Usage: encrypt
 	Name-Real: $name_real
 	Name-Comment: $name_comment
 	Name-Email: $name_email
