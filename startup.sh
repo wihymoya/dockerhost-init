@@ -24,11 +24,28 @@ gpgtty_line="export GPG_TTY=$(tty)"; $gpgtty_line
 sudo sh -c "echo $gcmcredstore_line >> $customenv_filepath"
 sudo sh -c "echo $gpgtty_line >> $customenv_filepath"
 
-# Run gpg to generate key pair and UID of 'USER_ID'. You must set $GPG_PASSPHRASE before running this script
-gpg --batch --passphrase $gpg_passphrase --quick-gen-key USER_ID default default never
+# Create config file for GPG --generate-key
+cat > config <<EOF
+     Key-Type: RSA
+     Key-Length: 4096
+	   Key-Usage: encrypt
+     Subkey-Type: RSA
+     Subkey-Length: 4096
+     Name-Real: wylabs-admin
+     Name-Comment: still in dev
+     Name-Email: admin@wylabs.net
+     Expire-Date: 1y
+     Passphrase: $gpg_passphrase
+EOF
+
+# Run gpg to generate key pair using config file
+gpg --batch --generate-key config
+
+# Unset $gpg_passphrase
+unset gpg_passphrase
 
 # Initialize credential store
-pass init USER_ID
+pass init "wylabs-admin (still in dev) <admin@wylabs.net>"
 
 # Download latest GCM deb package
 wget "https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.1/gcm-linux_amd64.2.6.1.deb"
