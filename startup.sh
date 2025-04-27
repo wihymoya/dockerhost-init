@@ -1,12 +1,10 @@
 #!/bin/bash
-# -----------------------------------------------------------------------------------------------------------------------------
 # REMEMBER TO DOT RUN THIS SCRIPT
-# user@host:~$ source ./gcm.sh
-# -----------------------------------------------------------------------------------------------------------------------------
+# user@host:~$ source ./startup.sh
 
+# --------------------------------
+# Git Credential Manager
 
-# Git Credential Installer
-# -----------------------------------------------------------------------------------------------------------------------------
 # Configure $gpg_passphrase via active prompt
 gpg_passphrase=$(read -sp "GPG Passphrase: " gpg_pw; echo $gpg_pw); echo ""
 
@@ -26,16 +24,16 @@ sudo sh -c "echo $gpgtty_line >> $customenv_filepath"
 
 # Create config file for GPG --generate-key
 cat > config <<EOF
-     Key-Type: RSA
-     Key-Length: 4096
-	   Key-Usage: encrypt
-     Subkey-Type: RSA
-     Subkey-Length: 4096
-     Name-Real: wylabs-admin
-     Name-Comment: still in dev
-     Name-Email: admin@wylabs.net
-     Expire-Date: 1y
-     Passphrase: $gpg_passphrase
+	Key-Type: RSA
+	Key-Length: 4096
+	Key-Usage: encrypt
+	Subkey-Type: RSA
+	Subkey-Length: 4096
+	Name-Real: wylabs-admin
+	Name-Comment: still in dev
+  Name-Email: admin@wylabs.net
+  Expire-Date: 1y
+  Passphrase: $gpg_passphrase
 EOF
 
 # Run gpg to generate key pair using config file
@@ -58,11 +56,11 @@ sudo rm gcm-linux_amd64.2.6.1.deb
 
 # Configure GCM
 git-credential-manager configure
-# -----------------------------------------------------------------------------------------------------------------------------
+# --------------------------------
 
+# --------------------------------
+# Docker
 
-# Install Docker
-# -----------------------------------------------------------------------------------------------------------------------------
 # Remove old and conflicting packages
 for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
 
@@ -97,4 +95,17 @@ sudo usermod -aG docker $USER
 
 # Activate changes to groups
 newgrp docker
-# -----------------------------------------------------------------------------------------------------------------------------
+# --------------------------------
+
+# --------------------------------
+# Disable port 53 on host
+
+# Disable stub resolver
+sudo sed -r -i.orig 's/#?DNSStubListener=yes/DNSStubListener=no/g' /etc/systemd/resolved.conf
+
+# Update symlink to point to /run/systemd/resolve/resolv.conf, which is automatically updated to follow the system's netplan
+sudo sh -c 'rm /etc/resolv.conf && ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf'
+
+# Restart systemd-resolved service
+sudo systemctl restart systemd-resolved
+# --------------------------------
