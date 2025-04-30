@@ -60,6 +60,9 @@ EOF
 # Run gpg to generate key pair using config file
 gpg --batch --generate-key config
 
+# Remove the config file
+sudo rm config
+
 # Initialize credential store
 pass init "$name_real ($name_comment) <$name_email>"
 
